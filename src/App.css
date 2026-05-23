@@ -7,8 +7,8 @@ body {
     sans-serif;
   display: flex;
   justify-content: center;
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding-top: 40px;
+  padding-bottom: 60px;
   margin: 0;
 }
 
@@ -20,7 +20,7 @@ body {
 
 h1 {
   font-size: 2.5rem;
-  margin-bottom: 5px;
+  margin-bottom: 20px;
 }
 
 p {
@@ -28,10 +28,39 @@ p {
   margin-bottom: 30px;
 }
 
+/* --- NEW TABS CSS --- */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 15px;
+}
+
+.tab-btn {
+  background: transparent;
+  color: #b3b3b3;
+  border: 1px solid #333;
+  padding: 10px 25px;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background: #1db954;
+  color: #121212;
+  border-color: #1db954;
+  font-weight: bold;
+}
+
+/* --- SEARCH & BUTTONS --- */
 .search-box {
   display: flex;
   gap: 10px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 input {
@@ -49,11 +78,11 @@ input:focus {
   border-color: #1db954;
 }
 
-button {
+.primary-btn {
   padding: 15px 25px;
   border-radius: 8px;
   border: none;
-  background: #1db954; /* Sangeet Green */
+  background: #1db954;
   color: #121212;
   font-size: 16px;
   font-weight: bold;
@@ -61,30 +90,85 @@ button {
   transition: background 0.2s;
 }
 
-button:hover:not(:disabled) {
+.primary-btn:hover:not(:disabled) {
   background: #1ed760;
 }
 
-button:disabled {
-  background: #555;
-  cursor: not-allowed;
-  color: #888;
+.save-btn {
+  width: 100%;
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #333;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: border-color 0.2s;
 }
 
+.save-btn:hover {
+  border-color: #1db954;
+}
+
+/* --- LIBRARY CSS --- */
+.saved-mix-container {
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.mix-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 15px;
+}
+
+.mix-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-transform: capitalize;
+}
+
+.delete-btn {
+  background: transparent;
+  color: #ff4c4c;
+  border: 1px solid #ff4c4c;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background: #ff4c4c;
+  color: white;
+}
+
+.empty-state {
+  font-size: 1.2rem;
+  margin-top: 50px;
+}
+
+/* --- SONG CARDS --- */
 .playlist {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-/* --- THE UI FIXES --- */
-
 .song-card {
   background: #1e1e1e;
   padding: 15px;
   border-radius: 12px;
   display: flex;
-  align-items: center; /* Centers everything vertically */
+  align-items: center;
   gap: 15px;
   border: 1px solid #333;
   transition: transform 0.2s;
@@ -96,27 +180,26 @@ button:disabled {
   border-color: #555;
 }
 
-.album-art {
-  width: 100px;
-  height: 100px;
-  min-width: 100px; /* Forces it to stay exactly 100px wide */
-  border-radius: 8px;
-  object-fit: cover;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  flex-shrink: 0; /* Stops flexbox from crushing or expanding the image */
-}
-
+.album-art,
 .album-placeholder {
   width: 100px;
   height: 100px;
   min-width: 100px;
   border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.album-art {
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.album-placeholder {
   background: #333;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  flex-shrink: 0;
 }
 
 .song-info {
@@ -124,8 +207,8 @@ button:disabled {
   flex-direction: column;
   justify-content: center;
   gap: 8px;
-  flex-grow: 1; /* Tells the text area to take up the remaining space */
-  overflow: hidden; /* Prevents long text from spilling out */
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 .song-title {
@@ -133,7 +216,7 @@ button:disabled {
   font-size: 1.1rem;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Adds '...' if the title is too long */
+  text-overflow: ellipsis;
 }
 
 .song-artist {
@@ -150,7 +233,6 @@ button:disabled {
   outline: none;
 }
 
-/* Customizing the default HTML5 audio player slightly for dark mode */
 audio::-webkit-media-controls-panel {
   background-color: #2a2a2a;
 }
