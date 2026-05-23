@@ -8,6 +8,7 @@ body {
   display: flex;
   justify-content: center;
   padding-top: 50px;
+  padding-bottom: 50px;
   margin: 0;
 }
 
@@ -73,18 +74,21 @@ button:disabled {
 .playlist {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 15px;
 }
+
+/* --- THE UI FIXES --- */
 
 .song-card {
   background: #1e1e1e;
-  padding: 20px;
-  border-radius: 8px;
+  padding: 15px;
+  border-radius: 12px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  align-items: center; /* Centers everything vertically */
+  gap: 15px;
   border: 1px solid #333;
   transition: transform 0.2s;
+  text-align: left;
 }
 
 .song-card:hover {
@@ -92,11 +96,65 @@ button:disabled {
   border-color: #555;
 }
 
+.album-art {
+  width: 100px;
+  height: 100px;
+  min-width: 100px; /* Forces it to stay exactly 100px wide */
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0; /* Stops flexbox from crushing or expanding the image */
+}
+
+.album-placeholder {
+  width: 100px;
+  height: 100px;
+  min-width: 100px;
+  border-radius: 8px;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.song-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  flex-grow: 1; /* Tells the text area to take up the remaining space */
+  overflow: hidden; /* Prevents long text from spilling out */
+}
+
 .song-title {
   font-weight: bold;
   font-size: 1.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Adds '...' if the title is too long */
 }
 
 .song-artist {
   color: #b3b3b3;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio-player {
+  width: 100%;
+  height: 35px;
+  outline: none;
+}
+
+/* Customizing the default HTML5 audio player slightly for dark mode */
+audio::-webkit-media-controls-panel {
+  background-color: #2a2a2a;
+}
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display {
+  color: white;
 }
