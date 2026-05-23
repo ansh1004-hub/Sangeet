@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, Search, Library } from "lucide-react";
+import { Home, Search, Library, User } from "lucide-react";
 
 export default function Sidebar() {
   return (
@@ -37,6 +37,17 @@ export default function Sidebar() {
         >
           <Library size={24} />
           <span>Your Library</span>
+        </NavLink>
+
+        {/* Correctly integrated Profile link */}
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            isActive ? "nav-item active" : "nav-item"
+          }
+        >
+          <User size={24} />
+          <span>Profile</span>
         </NavLink>
       </nav>
     </div>

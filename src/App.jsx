@@ -8,6 +8,9 @@ import Search from "./pages/Search";
 import Library from "./pages/Library";
 import Auth from "./pages/Auth";
 import "./App.css";
+import TrackDetails from "./pages/TrackDetails";
+import Profile from "./pages/Profile";
+import AlbumDetails from "./pages/AlbumDetails";
 
 // The "Bouncer" Component: Checks if a user is logged in
 function ProtectedRoute({ children }) {
@@ -58,6 +61,30 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Library />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/track/:artistName/:songTitle"
+              element={
+                <ProtectedRoute>
+                  <TrackDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/album/:collectionId"
+              element={
+                <ProtectedRoute>
+                  <AlbumDetails />
                 </ProtectedRoute>
               }
             />

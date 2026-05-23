@@ -4,29 +4,33 @@ import { supabase } from "../supabaseClient";
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  // Keep this name as "AuthProvider"
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Check for an active session when the app loads
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    // 2. Listen for any changes (like the user logging in or signing out)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
-    // Cleanup the listener when the app closes
     return () => subscription.unsubscribe();
   }, []);
 
+  // Ensure this logout function is defined here
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, logout }}>
       {!loading && children}
     </AuthContext.Provider>
   );
