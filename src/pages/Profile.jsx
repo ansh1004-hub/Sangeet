@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 
+// Reusable menu option component
 const ProfileOption = ({ icon: Icon, title, onClick, color = "white" }) => (
   <div
     onClick={onClick}
@@ -44,19 +45,20 @@ export default function Profile() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // --- STATES ---
+  // --- MODAL STATES ---
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  // --- FORM STATES ---
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
-
   const [formData, setFormData] = useState({
     fullName: "",
     dob: "",
     region: "",
   });
 
-  // Password States
+  // Password specific states
   const [pwdFlow, setPwdFlow] = useState("standard"); // 'standard' or 'otp'
   const [pwdData, setPwdData] = useState({
     oldPassword: "",
@@ -64,6 +66,7 @@ export default function Profile() {
     otp: "",
   });
 
+  // Load existing user data when the component mounts
   useEffect(() => {
     if (user && user.user_metadata) {
       setFormData({
@@ -83,7 +86,7 @@ export default function Profile() {
     alert(`${feature} settings will be available in the next update!`);
   };
 
-  // --- SAVE PERSONAL INFO ---
+  // --- SAVE PERSONAL INFO LOGIC ---
   const handleSaveInfo = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -104,7 +107,7 @@ export default function Profile() {
     }
   };
 
-  // --- PASSWORD UPDATE LOGIC ---
+  // --- SEND OTP LOGIC ---
   const handleSendOtp = async () => {
     setIsSaving(true);
     setMessage("");
@@ -120,6 +123,7 @@ export default function Profile() {
     }
   };
 
+  // --- PASSWORD UPDATE LOGIC ---
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -127,37 +131,45 @@ export default function Profile() {
 
     try {
       if (pwdFlow === "standard") {
-        // Step 1: Verify Old Password securely
-        const { error: verifyError } = await supabase.auth.signInWithPassword({
-          email: user.email,
-          password: pwdData.oldPassword,
+        // Strict Security Flow: Send both old and new password together
+        const { error: updateError } = await supabase.auth.updateUser({
+          password: pwdData.newPassword,
+          currentPassword: pwdData.oldPassword,
         });
-        if (verifyError) throw new Error("Incorrect old password.");
+
+        if (updateError) {
+          if (updateError.message.includes("Password should contain")) {
+            throw new Error(
+              "Password must contain 1 uppercase, 1 lowercase, and 1 number.",
+            );
+          }
+          throw updateError;
+        }
       } else {
-        // Step 1 Alternative: Verify OTP securely
+        // OTP Recovery Flow
         const { error: otpError } = await supabase.auth.verifyOtp({
           email: user.email,
           token: pwdData.otp,
           type: "recovery",
         });
         if (otpError) throw new Error("Invalid or expired code.");
-      }
 
-      // Step 2: Update to the New Password
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: pwdData.newPassword,
-      });
+        // Once OTP is verified, update to the new password
+        const { error: updateError } = await supabase.auth.updateUser({
+          password: pwdData.newPassword,
+        });
 
-      if (updateError) {
-        if (updateError.message.includes("Password should contain")) {
-          throw new Error(
-            "Password must contain 1 uppercase, 1 lowercase, and 1 number.",
-          );
+        if (updateError) {
+          if (updateError.message.includes("Password should contain")) {
+            throw new Error(
+              "Password must contain 1 uppercase, 1 lowercase, and 1 number.",
+            );
+          }
+          throw updateError;
         }
-        throw updateError;
       }
 
-      // Success! Close modal and reset state
+      // Success! Close modal, clear forms, and show success alert
       setIsChangingPassword(false);
       setPwdFlow("standard");
       setPwdData({ oldPassword: "", newPassword: "", otp: "" });
@@ -169,6 +181,7 @@ export default function Profile() {
     }
   };
 
+  // Display Name logic for the banner
   const displayName = user?.user_metadata?.full_name || "Sangeet User";
 
   return (
@@ -188,7 +201,7 @@ export default function Profile() {
         Account Overview
       </h1>
 
-      {/* Hero Banner */}
+      {/* --- HERO BANNER --- */}
       <div
         style={{
           background: "linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%)",
@@ -233,6 +246,7 @@ export default function Profile() {
         </div>
       </div>
 
+      {/* --- SETTINGS LIST --- */}
       <h3
         style={{ fontSize: "1.2rem", marginBottom: "15px", color: "#e4e4e7" }}
       >
@@ -276,7 +290,6 @@ export default function Profile() {
           marginBottom: "30px",
         }}
       >
-        {/* NEW ONCLICK HOOKED UP */}
         <ProfileOption
           icon={Lock}
           title="Change Password"
@@ -323,7 +336,7 @@ export default function Profile() {
         />
       </div>
 
-      {/* --- 1. EDIT INFO MODAL --- */}
+      {/* --- EDIT INFO MODAL --- */}
       {isEditingInfo && (
         <div
           style={{
@@ -405,6 +418,68 @@ export default function Profile() {
                   }}
                 />
               </div>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "5px",
+                    color: "#a3a3a3",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  Date of Birth
+                </label>
+                <input
+                  type="date"
+                  value={formData.dob}
+                  onChange={(e) =>
+                    setFormData({ ...formData, dob: e.target.value })
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "6px",
+                    background: "#27272a",
+                    border: "1px solid #3f3f46",
+                    color: "white",
+                    outline: "none",
+                    colorScheme: "dark",
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "5px",
+                    color: "#a3a3a3",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  Region
+                </label>
+                <select
+                  value={formData.region}
+                  onChange={(e) =>
+                    setFormData({ ...formData, region: e.target.value })
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "6px",
+                    background: "#27272a",
+                    border: "1px solid #3f3f46",
+                    color: "white",
+                    outline: "none",
+                  }}
+                >
+                  <option value="">Select your region...</option>
+                  <option value="India">India</option>
+                  <option value="USA">United States</option>
+                  <option value="UK">United Kingdom</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
               <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
                 <button
                   type="button"
@@ -444,7 +519,7 @@ export default function Profile() {
         </div>
       )}
 
-      {/* --- 2. CHANGE PASSWORD MODAL --- */}
+      {/* --- CHANGE PASSWORD MODAL --- */}
       {isChangingPassword && (
         <div
           style={{
