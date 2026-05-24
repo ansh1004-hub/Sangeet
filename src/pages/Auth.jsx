@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, ArrowLeft, Music } from "lucide-react"; // Added Music icon
+import { Eye, EyeOff, ArrowLeft, Music, Headphones } from "lucide-react";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -30,9 +30,7 @@ export default function Auth() {
     setMessage("");
 
     if (!isValidEmail(email)) {
-      setMessage(
-        "Please enter a fully valid email address (e.g., name@gmail.com).",
-      );
+      setMessage("Please enter a fully valid email address.");
       return;
     }
 
@@ -53,11 +51,9 @@ export default function Auth() {
         setShowOtpInput(true);
       }
     } catch (error) {
-      if (
-        error.message.includes("Password should contain at least one character")
-      ) {
+      if (error.message.includes("Password should contain")) {
         setMessage(
-          "Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number.",
+          "Password must contain 1 uppercase, 1 lowercase, and 1 number.",
         );
       } else {
         setMessage(error.message);
@@ -81,7 +77,7 @@ export default function Auth() {
       if (error) throw error;
       navigate("/");
     } catch (error) {
-      setMessage("Invalid or expired code. Please try again.");
+      setMessage("Invalid or expired code.");
     } finally {
       setLoading(false);
     }
@@ -151,50 +147,79 @@ export default function Auth() {
 
   return (
     <div
-      className="page-content auth-page"
-      style={{ height: "100vh", width: "100%" }}
+      // Removed the "page-content" class so it stops inheriting sidebar margins!
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 9999,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#1e1b4b", // Dark purple background
+        margin: 0,
+        padding: 0,
+        boxSizing: "border-box",
+      }}
     >
+      {/* --- BRAND LOGO --- */}
       <div
-        className="auth-container"
         style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          marginBottom: "25px",
+        }}
+      >
+        <Headphones size={36} color="white" />
+        <h1
+          style={{
+            color: "white",
+            fontSize: "2.5rem",
+            fontWeight: "bold",
+            margin: 0,
+          }}
+        >
+          Sangeet
+        </h1>
+      </div>
+
+      <div
+        style={{
           width: "90%",
-          maxWidth: "420px",
-          background: "#1e1e2f",
+          maxWidth: "400px",
+          background: "#18181b",
           padding: "40px",
-          borderRadius: "16px",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+          borderRadius: "12px",
+          boxShadow: "0 15px 30px rgba(0,0,0,0.6)",
+          boxSizing: "border-box",
         }}
       >
         {/* --- CLASSY HEADER SECTION --- */}
-        <div style={{ textAlign: "center", marginBottom: "35px" }}>
-          {/* Gradient Music Icon Container */}
+        <div style={{ textAlign: "center", marginBottom: "30px" }}>
           <div
             style={{
               display: "inline-flex",
               justifyContent: "center",
               alignItems: "center",
-              background: "linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%)",
+              background: "#3f3f46",
               padding: "16px",
               borderRadius: "50%",
               marginBottom: "15px",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
             }}
           >
-            <Music size={28} color="white" />
+            <Music size={24} color="white" />
           </div>
 
-          {/* Dynamic Main Heading */}
           <h2
             style={{
               margin: "0 0 10px 0",
-              fontSize: "1.8rem",
+              fontSize: "1.6rem",
               fontWeight: "bold",
               color: "white",
-              letterSpacing: "0.5px",
             }}
           >
             {isForgotPassword
@@ -203,16 +228,15 @@ export default function Auth() {
                 ? "Check Your Inbox"
                 : isLogin
                   ? "Welcome back"
-                  : "Join Sangeet today"}
+                  : "Join Sangeet"}
           </h2>
 
-          {/* Dynamic Subtitle */}
           <p
             style={{
               margin: 0,
               color: "#a3a3a3",
-              fontSize: "0.95rem",
-              lineHeight: "1.5",
+              fontSize: "0.9rem",
+              lineHeight: "1.4",
             }}
           >
             {isForgotPassword
@@ -230,7 +254,6 @@ export default function Auth() {
           resetStep === 1 ? (
             <form
               onSubmit={handleSendResetEmail}
-              className="auth-form"
               style={{ display: "flex", flexDirection: "column", gap: "15px" }}
             >
               <input
@@ -243,10 +266,11 @@ export default function Auth() {
                   padding: "14px",
                   borderRadius: "8px",
                   border: "1px solid #3f3f46",
-                  background: "#18181b",
+                  background: "#27272a",
                   color: "white",
                   outline: "none",
-                  fontSize: "1rem",
+                  boxSizing: "border-box",
+                  width: "100%",
                 }}
               />
               <button
@@ -261,8 +285,7 @@ export default function Auth() {
                   fontWeight: "bold",
                   cursor: "pointer",
                   marginTop: "10px",
-                  fontSize: "1rem",
-                  transition: "transform 0.1s",
+                  width: "100%",
                 }}
               >
                 {loading ? "Sending..." : "Send Reset Code"}
@@ -271,7 +294,6 @@ export default function Auth() {
           ) : (
             <form
               onSubmit={handleResetPassword}
-              className="auth-form"
               style={{ display: "flex", flexDirection: "column", gap: "15px" }}
             >
               <p
@@ -294,15 +316,15 @@ export default function Auth() {
                   padding: "14px",
                   borderRadius: "8px",
                   border: "1px solid #3f3f46",
-                  background: "#18181b",
+                  background: "#27272a",
                   color: "white",
                   textAlign: "center",
                   letterSpacing: "3px",
-                  fontSize: "1.1rem",
-                  outline: "none",
+                  boxSizing: "border-box",
+                  width: "100%",
                 }}
               />
-              <div style={{ position: "relative" }}>
+              <div style={{ position: "relative", width: "100%" }}>
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="New Password"
@@ -315,11 +337,10 @@ export default function Auth() {
                     paddingRight: "45px",
                     borderRadius: "8px",
                     border: "1px solid #3f3f46",
-                    background: "#18181b",
+                    background: "#27272a",
                     color: "white",
                     boxSizing: "border-box",
                     outline: "none",
-                    fontSize: "1rem",
                   }}
                 />
                 <button
@@ -353,7 +374,7 @@ export default function Auth() {
                   fontWeight: "bold",
                   cursor: "pointer",
                   marginTop: "10px",
-                  fontSize: "1rem",
+                  width: "100%",
                 }}
               >
                 {loading ? "Resetting..." : "Reset Password"}
@@ -364,7 +385,6 @@ export default function Auth() {
           /* --- SIGN UP OTP VERIFICATION FORM --- */
           <form
             onSubmit={handleVerifyOtp}
-            className="auth-form"
             style={{ display: "flex", flexDirection: "column", gap: "15px" }}
           >
             <p
@@ -378,7 +398,7 @@ export default function Auth() {
               We sent a 6-digit code to <br />
               <b style={{ color: "white" }}>{email}</b>.<br />
               <br />
-              Enter it below to verify your account.
+              Enter it below to verify.
             </p>
             <input
               type="text"
@@ -390,12 +410,14 @@ export default function Auth() {
                 padding: "16px",
                 borderRadius: "8px",
                 border: "1px solid #3f3f46",
-                background: "#18181b",
+                background: "#27272a",
                 color: "white",
                 textAlign: "center",
                 fontSize: "1.3rem",
                 letterSpacing: "5px",
                 outline: "none",
+                boxSizing: "border-box",
+                width: "100%",
               }}
             />
             <button
@@ -410,7 +432,7 @@ export default function Auth() {
                 fontWeight: "bold",
                 cursor: "pointer",
                 marginTop: "10px",
-                fontSize: "1rem",
+                width: "100%",
               }}
             >
               {loading ? "Verifying..." : "Verify Account"}
@@ -420,7 +442,6 @@ export default function Auth() {
           /* --- STANDARD EMAIL/PASSWORD FORM --- */
           <form
             onSubmit={handleAuth}
-            className="auth-form"
             style={{ display: "flex", flexDirection: "column", gap: "15px" }}
           >
             <input
@@ -433,14 +454,15 @@ export default function Auth() {
                 padding: "14px",
                 borderRadius: "8px",
                 border: "1px solid #3f3f46",
-                background: "#18181b",
+                background: "#27272a",
                 color: "white",
                 outline: "none",
-                fontSize: "1rem",
+                boxSizing: "border-box",
+                width: "100%",
               }}
             />
 
-            <div style={{ position: "relative" }}>
+            <div style={{ position: "relative", width: "100%" }}>
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
@@ -453,11 +475,10 @@ export default function Auth() {
                   paddingRight: "45px",
                   borderRadius: "8px",
                   border: "1px solid #3f3f46",
-                  background: "#18181b",
+                  background: "#27272a",
                   color: "white",
                   boxSizing: "border-box",
                   outline: "none",
-                  fontSize: "1rem",
                 }}
               />
               <button
@@ -482,30 +503,28 @@ export default function Auth() {
 
             {/* FORGOT PASSWORD BUTTON */}
             {isLogin && (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsForgotPassword(true);
-                  setMessage("");
-                  setPassword("");
-                }}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#a78bfa",
-                  textAlign: "right",
-                  fontSize: "0.9rem",
-                  cursor: "pointer",
-                  marginTop: "-5px",
-                  padding: 0,
-                  fontWeight: "500",
-                  transition: "color 0.2s",
-                }}
-                onMouseEnter={(e) => (e.target.style.color = "#d8b4fe")}
-                onMouseLeave={(e) => (e.target.style.color = "#a78bfa")}
+              <div
+                style={{ width: "100%", textAlign: "right", marginTop: "-5px" }}
               >
-                Forgot password?
-              </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsForgotPassword(true);
+                    setMessage("");
+                    setPassword("");
+                  }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#a78bfa",
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  Forgot password?
+                </button>
+              </div>
             )}
 
             <button
@@ -520,7 +539,7 @@ export default function Auth() {
                 fontWeight: "bold",
                 cursor: "pointer",
                 marginTop: "10px",
-                fontSize: "1rem",
+                width: "100%",
               }}
             >
               {loading ? "Processing..." : isLogin ? "Log In" : "Sign Up"}
@@ -531,17 +550,13 @@ export default function Auth() {
         {/* --- ERROR/SUCCESS MESSAGES --- */}
         {message && (
           <p
-            className="auth-message"
             style={{
               textAlign: "center",
               color: message.includes("code has been sent")
                 ? "#4ade80"
                 : "#ef4444",
-              marginTop: "20px",
-              fontSize: "0.95rem",
-              padding: "10px",
-              background: "rgba(0,0,0,0.2)",
-              borderRadius: "8px",
+              marginTop: "15px",
+              fontSize: "0.9rem",
             }}
           >
             {message}
@@ -551,12 +566,11 @@ export default function Auth() {
         {/* --- BOTTOM NAVIGATION / SWITCHES --- */}
         {!showOtpInput && !isForgotPassword && (
           <p
-            className="auth-switch"
             style={{
               textAlign: "center",
               marginTop: "25px",
               color: "#a3a3a3",
-              fontSize: "0.95rem",
+              fontSize: "0.9rem",
             }}
           >
             {isLogin ? "Don't have an account? " : "Already have an account? "}
@@ -567,7 +581,6 @@ export default function Auth() {
                 setMessage("");
                 setShowPassword(false);
               }}
-              className="text-btn"
               style={{
                 background: "none",
                 border: "none",
@@ -575,7 +588,6 @@ export default function Auth() {
                 fontWeight: "bold",
                 cursor: "pointer",
                 textDecoration: "underline",
-                fontSize: "0.95rem",
               }}
             >
               {isLogin ? "Sign up" : "Log in"}
@@ -603,14 +615,11 @@ export default function Auth() {
               border: "none",
               color: "#a3a3a3",
               cursor: "pointer",
-              marginTop: "25px",
-              fontSize: "0.95rem",
-              transition: "color 0.2s",
+              marginTop: "20px",
+              fontSize: "0.9rem",
             }}
-            onMouseEnter={(e) => (e.target.style.color = "white")}
-            onMouseLeave={(e) => (e.target.style.color = "#a3a3a3")}
           >
-            <ArrowLeft size={18} /> Back to log in
+            <ArrowLeft size={16} /> Back to log in
           </button>
         )}
       </div>
