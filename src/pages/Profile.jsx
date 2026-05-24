@@ -13,6 +13,8 @@ import {
   Music,
   CreditCard,
   X,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 // Reusable menu option component
@@ -65,6 +67,10 @@ export default function Profile() {
     newPassword: "",
     otp: "",
   });
+
+  // Toggle states for showing passwords
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   // Load existing user data when the component mounts
   useEffect(() => {
@@ -131,7 +137,6 @@ export default function Profile() {
 
     try {
       if (pwdFlow === "standard") {
-        // Strict Security Flow: Send both old and new password together
         const { error: updateError } = await supabase.auth.updateUser({
           password: pwdData.newPassword,
           currentPassword: pwdData.oldPassword,
@@ -146,7 +151,6 @@ export default function Profile() {
           throw updateError;
         }
       } else {
-        // OTP Recovery Flow
         const { error: otpError } = await supabase.auth.verifyOtp({
           email: user.email,
           token: pwdData.otp,
@@ -154,7 +158,6 @@ export default function Profile() {
         });
         if (otpError) throw new Error("Invalid or expired code.");
 
-        // Once OTP is verified, update to the new password
         const { error: updateError } = await supabase.auth.updateUser({
           password: pwdData.newPassword,
         });
@@ -169,10 +172,11 @@ export default function Profile() {
         }
       }
 
-      // Success! Close modal, clear forms, and show success alert
       setIsChangingPassword(false);
       setPwdFlow("standard");
       setPwdData({ oldPassword: "", newPassword: "", otp: "" });
+      setShowOldPassword(false);
+      setShowNewPassword(false);
       alert("Password updated successfully!");
     } catch (error) {
       setMessage(error.message);
@@ -181,7 +185,6 @@ export default function Profile() {
     }
   };
 
-  // Display Name logic for the banner
   const displayName = user?.user_metadata?.full_name || "Sangeet User";
 
   return (
@@ -296,6 +299,8 @@ export default function Profile() {
           onClick={() => {
             setIsChangingPassword(true);
             setMessage("");
+            setShowOldPassword(false);
+            setShowNewPassword(false);
           }}
         />
         <ProfileOption
@@ -589,23 +594,50 @@ export default function Profile() {
                     >
                       Current Password
                     </label>
-                    <input
-                      type="password"
-                      required
-                      value={pwdData.oldPassword}
-                      onChange={(e) =>
-                        setPwdData({ ...pwdData, oldPassword: e.target.value })
-                      }
-                      style={{
-                        width: "100%",
-                        padding: "12px",
-                        borderRadius: "6px",
-                        background: "#27272a",
-                        border: "1px solid #3f3f46",
-                        color: "white",
-                        outline: "none",
-                      }}
-                    />
+                    <div style={{ position: "relative" }}>
+                      <input
+                        type={showOldPassword ? "text" : "password"}
+                        required
+                        value={pwdData.oldPassword}
+                        onChange={(e) =>
+                          setPwdData({
+                            ...pwdData,
+                            oldPassword: e.target.value,
+                          })
+                        }
+                        style={{
+                          width: "100%",
+                          padding: "12px",
+                          paddingRight: "40px",
+                          borderRadius: "6px",
+                          background: "#27272a",
+                          border: "1px solid #3f3f46",
+                          color: "white",
+                          outline: "none",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowOldPassword(!showOldPassword)}
+                        style={{
+                          position: "absolute",
+                          right: "12px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          background: "none",
+                          border: "none",
+                          color: "#a3a3a3",
+                          cursor: "pointer",
+                          display: "flex",
+                        }}
+                      >
+                        {showOldPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
+                      </button>
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -669,24 +701,44 @@ export default function Profile() {
                 >
                   New Password
                 </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="Minimum 6 characters"
-                  value={pwdData.newPassword}
-                  onChange={(e) =>
-                    setPwdData({ ...pwdData, newPassword: e.target.value })
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    borderRadius: "6px",
-                    background: "#27272a",
-                    border: "1px solid #3f3f46",
-                    color: "white",
-                    outline: "none",
-                  }}
-                />
+                <div style={{ position: "relative" }}>
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    required
+                    placeholder="Minimum 6 characters"
+                    value={pwdData.newPassword}
+                    onChange={(e) =>
+                      setPwdData({ ...pwdData, newPassword: e.target.value })
+                    }
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      paddingRight: "40px",
+                      borderRadius: "6px",
+                      background: "#27272a",
+                      border: "1px solid #3f3f46",
+                      color: "white",
+                      outline: "none",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    style={{
+                      position: "absolute",
+                      right: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      color: "#a3a3a3",
+                      cursor: "pointer",
+                      display: "flex",
+                    }}
+                  >
+                    {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               {message && (
